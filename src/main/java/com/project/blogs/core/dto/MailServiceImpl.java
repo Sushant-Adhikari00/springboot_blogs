@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 public class MailServiceImpl implements MailService {
     private static final Logger logger = LoggerFactory.getLogger(MailServiceImpl.class);
 
-    @Value("sushantadhikari35@gmail.com")
+    @Value("${EMAIL_UNAME}")
     private String sender;
 
     @Autowired

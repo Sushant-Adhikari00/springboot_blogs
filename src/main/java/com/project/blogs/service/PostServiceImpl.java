@@ -1,0 +1,119 @@
+package com.project.blogs.service;
+
+import com.project.blogs.core.dto.ApiResponse;
+import com.project.blogs.core.dto.PaginationDto;
+import com.project.blogs.dto.post_dto.request.CreatePostRequestDto;
+import com.project.blogs.dto.post_dto.request.DeletePostRequestDto;
+import com.project.blogs.dto.post_dto.request.UpdatePostRequestDto;
+import com.project.blogs.dto.post_dto.request.ViewPostRequestDto;
+import com.project.blogs.dto.post_dto.response.ListResponseDto;
+import com.project.blogs.dto.post_dto.response.ViewPostResponseDto;
+import com.project.blogs.entity.Post;
+import com.project.blogs.exception.NotFoundException;
+import com.project.blogs.mapper.PostMapper;
+import com.project.blogs.repo.PostRepo;
+import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
+@Service
+public class PostServiceImpl implements PostService {
+    private static final Logger logger = LoggerFactory.getLogger(PostServiceImpl.class);
+    @Autowired
+    private PostRepo postRepo;
+
+    @Autowired
+    private PostMapper postMapper;
+
+    @Override
+    @Transactional
+    public ResponseEntity<ApiResponse<?>> savePost(CreatePostRequestDto postRequestDto){
+        Post post = postMapper.savePost(postRequestDto);
+
+        postRepo.save(post);
+        logger.info(post.toString());
+        ApiResponse<?> apiResponse = new ApiResponse<>(true, 200, LocalDateTime.now(),"Post created successfully");
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<ApiResponse<?>> listAllPost(PaginationDto paginationDto){
+        Pageable pageable = PageRequest.of(paginationDto.getPage(), paginationDto.getSize(), Sort.Direction.DESC, "id");
+        Page<Post> postsPage;
+
+        if(paginationDto.getKeyword()!=null && paginationDto.getKeyword().trim().isEmpty()){
+            postsPage = postRepo.searchPosts(paginationDto.getKeyword().trim(),pageable);
+        }
+        else {
+            postsPage = postRepo.findAll(pageable);
+        }
+        List<ListResponseDto> listPostResponse = postMapper.listAllPost(postsPage);
+        logger.info("Posts listed successfully");
+
+        ApiResponse<?> apiResponse = new ApiResponse<>(true, 200, LocalDateTime.now(),"Posts listed");
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<ApiResponse<?>> viewPost(ViewPostRequestDto viewPostRequestDto){
+        Optional<Post> post = postRepo.findBySlug(viewPostRequestDto.getSlug());
+        if(post.isEmpty()){
+            logger.info("Post not found");
+            throw new NotFoundException("Post not found");
+        }
+
+        ViewPostResponseDto viewPostResponseDto = postMapper.viewPost(post.get());
+        logger.info("Post viewed successfully");
+
+        ApiResponse<?> apiResponse = new ApiResponse<>(true, 200, LocalDateTime.now(),"Post viewed");
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<ApiResponse<?>> updatePost(UpdatePostRequestDto updatePostRequestDto){
+        Optional<Post> postOpt = postRepo.findBySlug(updatePostRequestDto.getSlug());
+        if(postOpt.isEmpty()){
+            logger.info("Post not found");
+            throw new NotFoundException("Post not found");
+        }
+        Post postExsits = postOpt.get();
+         Post postToUpdate = postMapper.updatePost(postExsits, updatePostRequestDto);
+         postRepo.save(postToUpdate);
+         logger.info("Post updated successfully");
+
+         ApiResponse<?> apiResponse = new ApiResponse<>(true, 200, LocalDateTime.now(),"Post updated");
+         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<ApiResponse<?>> deletePost(DeletePostRequestDto deletePostRequestDto){
+        Optional<Post> post = postRepo.findBySlug(deletePostRequestDto.getSlug());
+        if(post.isEmpty()){
+            logger.info("Post not found");
+            throw new NotFoundException("Post not found");
+        }
+        Post postToDelete = postMapper.deletePost(post.get());
+        postRepo.save(postToDelete);
+        logger.info("Post deleted successfully");
+
+        ApiResponse<?> apiResponse = new ApiResponse<>(true, 200, LocalDateTime.now(),"Post deleted");
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
+
+}

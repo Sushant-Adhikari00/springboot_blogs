@@ -1,0 +1,34 @@
+server:
+  port: 8095
+spring:
+  application:
+    name: blog_platform
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.MySQLDialect
+    show-sql: true
+    database: mysql
+    properties:
+      hibernate:
+        format_sql: true
+  liquibase:
+    enabled: true
+    change-log: classpath:/db/changelog/changelog-master.yaml
+    contexts: dev
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: sushantadhikari35@gmail.com
+    password: hebn wwkx xihw lhck
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true

@@ -1,4 +1,4 @@
-package com.project.blogs.core.dto;
+package com.project.blogs.core.dto.email;
 
 import jakarta.mail.internet.MimeMessage;
 import org.slf4j.Logger;

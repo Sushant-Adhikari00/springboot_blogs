@@ -13,6 +13,10 @@ CREATE TABLE IF NOT EXISTS `users`
     is_deleted      BOOLEAN             DEFAULT false
 )
 
+-- changeset sushant.adhikari:users-create-v2 context:dev
+-- preconditions onFail:CONTINUE onError:HALT
 
+ALTER TABLE users
+ADD COLUMN profile_picture VARCHAR(255) NOT NULL;
 
 

@@ -11,6 +11,7 @@ import com.project.blogs.exception.NotFoundException;
 import com.project.blogs.repo.PostRepo;
 import com.project.blogs.repo.UserRepo;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.ReportingPolicy;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +58,7 @@ public abstract class PostMapper{
         return post;
     }
 
-
+    @Mapping(target = "author", source = "author.username")
     public abstract ListResponseDto entityToResponse(Post post);
     public List<ListResponseDto> listAllPost(Page<Post> posts)  {
         return posts.getContent().stream().map(this::entityToResponse).collect(Collectors.toList());

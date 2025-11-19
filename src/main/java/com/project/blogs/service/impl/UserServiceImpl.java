@@ -1,7 +1,8 @@
-package com.project.blogs.service;
+package com.project.blogs.service.impl;
 
 import com.project.blogs.core.dto.ApiResponse;
-import com.project.blogs.core.dto.EmailTemplateService;
+import com.project.blogs.core.dto.email.EmailTemplateService;
+import com.project.blogs.core.service.FileService;
 import com.project.blogs.dto.user_dto.request.DeleteUserDto;
 import com.project.blogs.dto.user_dto.request.RequestUserDto;
 import com.project.blogs.dto.user_dto.request.UpdateUserDto;
@@ -9,9 +10,11 @@ import com.project.blogs.dto.user_dto.request.ViewUserRequest;
 import com.project.blogs.dto.user_dto.response.ResponseViewUserDto;
 import com.project.blogs.entity.User;
 import com.project.blogs.exception.DuplicateException;
+import com.project.blogs.exception.FileSizeExceededException;
 import com.project.blogs.exception.NotFoundException;
 import com.project.blogs.mapper.UserMapper;
 import com.project.blogs.repo.UserRepo;
+import com.project.blogs.service.UserService;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -32,10 +36,12 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
     @Autowired
     private EmailTemplateService emailTemplateService;
+    @Autowired
+    private FileService fileService;
 
     @Override
     @Transactional
-    public ResponseEntity<ApiResponse<?>> saveUser(RequestUserDto requestUserDto) {
+    public ResponseEntity<ApiResponse<?>> saveUser(RequestUserDto requestUserDto, MultipartFile profilePicture) {
         boolean existByEmail = userRepo.existsByEmail(requestUserDto.getEmail());
         if (existByEmail) {
             logger.error("Failed to save user due to Email {} already exists", requestUserDto.getEmail());
@@ -48,6 +54,17 @@ public class UserServiceImpl implements UserService {
         }
 
         User user = userMapper.saveUser(requestUserDto);
+
+        if (profilePicture != null && !profilePicture.isEmpty()) {
+            long maxSize =10*1024*1024; //ie 10 MB
+
+            if(profilePicture.getSize()>maxSize){
+                throw new FileSizeExceededException("File size must be less than or equal to "+maxSize);
+            }
+
+            String fileName = fileService.uploadFile(profilePicture);
+            user.setProfilePicture(fileName);
+        }
         userRepo.save(user);
         emailTemplateService.sendWelcomeMail(user);
         logger.info("User saved");

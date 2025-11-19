@@ -9,9 +9,9 @@ import com.project.blogs.dto.post_dto.request.ViewPostRequestDto;
 import org.springframework.http.ResponseEntity;
 
 public interface  PostService {
-    ResponseEntity<ApiResponse<?>> savePost(CreatePostRequestDto postRequestDto);
-    ResponseEntity<ApiResponse<?>> listAllPost(PaginationDto paginationDto);
+    ApiResponse<?> savePost(CreatePostRequestDto postRequestDto);
+    ApiResponse<?> listAllPost(PaginationDto paginationDto);
     ResponseEntity<ApiResponse<?>> viewPost(ViewPostRequestDto viewpostRequestDto);
-    ResponseEntity<ApiResponse<?>> updatePost(UpdatePostRequestDto updatePostRequestDto);
-    ResponseEntity<ApiResponse<?>> deletePost(DeletePostRequestDto deletePostRequestDto);
+    ApiResponse<?> updatePost(UpdatePostRequestDto updatePostRequestDto);
+    ApiResponse<?> deletePost(DeletePostRequestDto deletePostRequestDto);
 }

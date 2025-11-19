@@ -1,4 +1,4 @@
-package com.project.blogs.core.dto;
+package com.project.blogs.core.dto.email;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;

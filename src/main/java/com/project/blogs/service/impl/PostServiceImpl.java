@@ -1,6 +1,7 @@
-package com.project.blogs.service;
+package com.project.blogs.service.impl;
 
 import com.project.blogs.core.dto.ApiResponse;
+import com.project.blogs.core.dto.email.EmailTemplateServiceImpl;
 import com.project.blogs.core.dto.PaginationDto;
 import com.project.blogs.dto.post_dto.request.CreatePostRequestDto;
 import com.project.blogs.dto.post_dto.request.DeletePostRequestDto;
@@ -12,10 +13,13 @@ import com.project.blogs.entity.Post;
 import com.project.blogs.exception.NotFoundException;
 import com.project.blogs.mapper.PostMapper;
 import com.project.blogs.repo.PostRepo;
+import com.project.blogs.service.PostService;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -36,21 +40,29 @@ public class PostServiceImpl implements PostService {
 
     @Autowired
     private PostMapper postMapper;
+    @Autowired
+    private EmailTemplateServiceImpl emailTemplateServiceImpl;
 
+    @CacheEvict(value ="users", allEntries = true)
     @Override
     @Transactional
-    public ResponseEntity<ApiResponse<?>> savePost(CreatePostRequestDto postRequestDto){
+    public ApiResponse<?> savePost(CreatePostRequestDto postRequestDto){
         Post post = postMapper.savePost(postRequestDto);
 
         postRepo.save(post);
+        emailTemplateServiceImpl.sendPostCreateMail(post);
         logger.info(post.toString());
-        ApiResponse<?> apiResponse = new ApiResponse<>(true, 200, LocalDateTime.now(),"Post created successfully");
-        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+
+        return new ApiResponse<>(true, 200, LocalDateTime.now(),"Post created successfully");
     }
 
     @Override
     @Transactional
-    public ResponseEntity<ApiResponse<?>> listAllPost(PaginationDto paginationDto){
+    @Cacheable(
+            value = "users",
+            key = "#paginationDto.page + '-' + #paginationDto.size + '-' + (#paginationDto.keyword != null ? #paginationDto.keyword : '')"
+    )
+    public ApiResponse<?> listAllPost(PaginationDto paginationDto){
         Pageable pageable = PageRequest.of(paginationDto.getPage(), paginationDto.getSize(), Sort.Direction.DESC, "id");
         Page<Post> postsPage;
 
@@ -63,8 +75,7 @@ public class PostServiceImpl implements PostService {
         List<ListResponseDto> listPostResponse = postMapper.listAllPost(postsPage);
         logger.info("Posts listed successfully");
 
-        ApiResponse<?> apiResponse = new ApiResponse<>(true, 200, LocalDateTime.now(),"Posts listed");
-        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        return new ApiResponse<>(true, "Posts listed" ,200, LocalDateTime.now(), listPostResponse);
     }
 
     @Override
@@ -83,9 +94,10 @@ public class PostServiceImpl implements PostService {
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
+    @CacheEvict(value ="users", allEntries = true)
     @Override
     @Transactional
-    public ResponseEntity<ApiResponse<?>> updatePost(UpdatePostRequestDto updatePostRequestDto){
+    public ApiResponse<?> updatePost(UpdatePostRequestDto updatePostRequestDto){
         Optional<Post> postOpt = postRepo.findBySlug(updatePostRequestDto.getSlug());
         if(postOpt.isEmpty()){
             logger.info("Post not found");
@@ -96,13 +108,14 @@ public class PostServiceImpl implements PostService {
          postRepo.save(postToUpdate);
          logger.info("Post updated successfully");
 
-         ApiResponse<?> apiResponse = new ApiResponse<>(true, 200, LocalDateTime.now(),"Post updated");
-         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        return new ApiResponse<>(true, 200, LocalDateTime.now(),"Post updated");
+
     }
 
+    @CacheEvict(value ="users", allEntries = true)
     @Override
     @Transactional
-    public ResponseEntity<ApiResponse<?>> deletePost(DeletePostRequestDto deletePostRequestDto){
+    public ApiResponse<?> deletePost(DeletePostRequestDto deletePostRequestDto){
         Optional<Post> post = postRepo.findBySlug(deletePostRequestDto.getSlug());
         if(post.isEmpty()){
             logger.info("Post not found");
@@ -112,8 +125,8 @@ public class PostServiceImpl implements PostService {
         postRepo.save(postToDelete);
         logger.info("Post deleted successfully");
 
-        ApiResponse<?> apiResponse = new ApiResponse<>(true, 200, LocalDateTime.now(),"Post deleted");
-        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        return new ApiResponse<>(true, 200, LocalDateTime.now(),"Post deleted");
+
     }
 
 }

@@ -22,12 +22,14 @@ public class PostController {
 
     @PostMapping("/save")
     public ResponseEntity<ApiResponse<?>> save(@RequestBody @Valid CreatePostRequestDto postRequestDto) {
-        return postService.savePost(postRequestDto);
+        ApiResponse<?> apiResponse = postService.savePost(postRequestDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
     }
 
     @PostMapping("/list")
     public ResponseEntity<ApiResponse<?>> getAllPosts(@RequestBody @Valid PaginationDto pageRequestDto) {
-        return postService.listAllPost(pageRequestDto);
+        ApiResponse<?> apiResponse = postService.listAllPost(pageRequestDto);
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
     @PostMapping("/view")
@@ -37,11 +39,13 @@ public class PostController {
 
     @PostMapping("/update")
     public ResponseEntity<ApiResponse<?>> update(@RequestBody @Valid UpdatePostRequestDto updatePostRequestDto) {
-        return postService.updatePost(updatePostRequestDto);
+        ApiResponse<?> apiResponse = postService.updatePost(updatePostRequestDto);
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
     @PostMapping("/delete")
     public ResponseEntity<ApiResponse<?>> delete(@RequestBody @Valid DeletePostRequestDto deletePostRequestDto) {
-        return postService.deletePost(deletePostRequestDto);
+        ApiResponse<?> apiResponse = postService.deletePost(deletePostRequestDto);
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 }

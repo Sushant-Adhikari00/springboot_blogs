@@ -47,4 +47,7 @@ public class User {
     @CreatedDate
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    @Column(name = "profile_picture", nullable = false)
+    private String profilePicture;
 }

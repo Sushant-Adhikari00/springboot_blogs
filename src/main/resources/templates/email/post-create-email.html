@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml" lang="">
+<head>
+    <meta charset="UTF-8"></meta>
+    <title>Blog Created Successfully</title>
+</head>
+    <body style="font-family: Arial, sans-serif;">
+        <h2>Hello, <span th:text="${fullName}">User</span> 👋</h2>
+
+        <p>Your blog post has been created successfully! 🎉</p>
+
+        <p>Post Title:
+            <strong th:text="${title}">Sample Title</strong>
+        </p>
+
+        <p>Context:
+            <strong th:text="${content}">Sample Title</strong>
+        </p>
+
+
+        <p>Created at:
+            <strong th:text="${createdAt}">2025-11-17</strong>
+        </p>
+
+        <p>You can view or edit your post anytime from your dashboard.</p>
+
+        <hr/>
+        <small>This is an automated email. Do not reply.</small>
+    </body>
+</html>

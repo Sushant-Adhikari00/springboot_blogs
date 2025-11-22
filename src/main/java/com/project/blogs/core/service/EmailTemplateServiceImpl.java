@@ -1,5 +1,6 @@
-package com.project.blogs.core.dto.email;
+package com.project.blogs.core.service;
 
+import com.project.blogs.core.dto.email.SendMailRequestDto;
 import com.project.blogs.entity.Post;
 import com.project.blogs.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;

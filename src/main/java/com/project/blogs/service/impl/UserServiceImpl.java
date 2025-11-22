@@ -1,7 +1,7 @@
 package com.project.blogs.service.impl;
 
 import com.project.blogs.core.dto.ApiResponse;
-import com.project.blogs.core.dto.email.EmailTemplateService;
+import com.project.blogs.core.service.EmailTemplateService;
 import com.project.blogs.core.service.FileService;
 import com.project.blogs.dto.user_dto.request.DeleteUserDto;
 import com.project.blogs.dto.user_dto.request.RequestUserDto;

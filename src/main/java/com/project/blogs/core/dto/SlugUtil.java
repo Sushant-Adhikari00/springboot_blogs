@@ -1,7 +1,6 @@
 package com.project.blogs.core.dto;
 
-import com.project.blogs.repo.PostRepo;
-import org.springframework.beans.factory.annotation.Autowired;
+
 
 public class SlugUtil {
 

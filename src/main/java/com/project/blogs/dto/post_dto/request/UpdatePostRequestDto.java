@@ -1,6 +1,7 @@
 package com.project.blogs.dto.post_dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.project.blogs.entity.User;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,7 +17,7 @@ public class UpdatePostRequestDto {
     private String title;
     @NotBlank(message = "Content can not be empty")
     private String content;
-    private int authorId;
+    private Integer authorId;
     @JsonFormat(pattern = "yyyy-MM-dd hh:mm:s a")
     private LocalDateTime createdAt;
 }

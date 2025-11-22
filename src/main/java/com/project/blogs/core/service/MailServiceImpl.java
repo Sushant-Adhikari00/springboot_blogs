@@ -1,5 +1,6 @@
-package com.project.blogs.core.dto.email;
+package com.project.blogs.core.service;
 
+import com.project.blogs.core.dto.email.SendMailRequestDto;
 import jakarta.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,7 +1,7 @@
 package com.project.blogs.service.impl;
 
 import com.project.blogs.core.dto.ApiResponse;
-import com.project.blogs.core.dto.email.EmailTemplateServiceImpl;
+import com.project.blogs.core.service.EmailTemplateServiceImpl;
 import com.project.blogs.core.dto.PaginationDto;
 import com.project.blogs.dto.post_dto.request.CreatePostRequestDto;
 import com.project.blogs.dto.post_dto.request.DeletePostRequestDto;
@@ -90,7 +90,7 @@ public class PostServiceImpl implements PostService {
         ViewPostResponseDto viewPostResponseDto = postMapper.viewPost(post.get());
         logger.info("Post viewed successfully");
 
-        ApiResponse<?> apiResponse = new ApiResponse<>(true, 200, LocalDateTime.now(),"Post viewed");
+        ApiResponse<?> apiResponse = new ApiResponse<>(true, "Post viewed",200, LocalDateTime.now(), viewPostResponseDto);
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 

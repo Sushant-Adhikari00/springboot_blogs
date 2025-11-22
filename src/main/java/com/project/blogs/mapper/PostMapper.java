@@ -58,7 +58,7 @@ public abstract class PostMapper{
         return post;
     }
 
-    @Mapping(target = "author", source = "author.username")
+//    @Mapping(target = "author", source = "author.username")
     public abstract ListResponseDto entityToResponse(Post post);
     public List<ListResponseDto> listAllPost(Page<Post> posts)  {
         return posts.getContent().stream().map(this::entityToResponse).collect(Collectors.toList());

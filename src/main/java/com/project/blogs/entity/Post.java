@@ -1,5 +1,6 @@
 package com.project.blogs.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.blogs.core.dto.SlugUtil;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -35,6 +36,7 @@ public class Post {
 
     @ManyToOne
     @JoinColumn(name = "author_id", nullable = false)
+    @JsonIgnore
     private User author;
 
     @Column(name ="is_deleted", nullable = false)

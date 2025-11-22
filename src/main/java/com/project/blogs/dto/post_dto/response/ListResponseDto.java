@@ -1,5 +1,7 @@
 package com.project.blogs.dto.post_dto.response;
 
+import com.project.blogs.dto.user_dto.response.AuthorDto;
+import com.project.blogs.entity.User;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,7 +15,7 @@ public class ListResponseDto implements Serializable {
     private String title;
     @NotBlank (message = "Can not be empty")
     private String content;
-    private String author;
+    private AuthorDto author;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

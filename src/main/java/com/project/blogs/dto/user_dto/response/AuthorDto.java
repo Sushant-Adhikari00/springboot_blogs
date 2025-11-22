@@ -6,7 +6,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class AuthorDto {
-    private Integer id;
     private String fullName;
     private String username;
 }

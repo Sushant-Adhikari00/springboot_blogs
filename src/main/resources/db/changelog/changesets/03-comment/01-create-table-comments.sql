@@ -11,3 +11,10 @@ CREATE TABLE IF NOT EXISTS `comments` (
     FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
     FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE CASCADE
     );
+
+
+-- changeset sushant.adhikari:comments-alter-v1 context:dev
+-- preconditions onFail:CONTINUE onError:HALT
+
+ALTER TABLE comments
+ADD COLUMN is_deleted BOOLEAN DEFAULT FALSE;

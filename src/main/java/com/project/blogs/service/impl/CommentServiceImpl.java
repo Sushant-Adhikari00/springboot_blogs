@@ -10,6 +10,7 @@ import com.project.blogs.exception.NotFoundException;
 import com.project.blogs.mapper.CommentMapper;
 import com.project.blogs.repo.CommentRepo;
 import com.project.blogs.service.CommentService;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,8 @@ public class CommentServiceImpl implements CommentService {
     @Autowired
     private CommentMapper commentMapper;
 
+    @Override
+    @Transactional
     public ResponseEntity<?> addComment(CreateCommentDto createCommentDto) {
         Comment comment = commentMapper.saveComment(createCommentDto);
         commentRepo.save(comment);
@@ -43,6 +46,8 @@ public class CommentServiceImpl implements CommentService {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @Override
+    @Transactional
     public ResponseEntity<?> listAllComment(PaginationDto paginationDto) {
         Pageable pageable = PageRequest.of(paginationDto.getPage(), paginationDto.getSize(), Sort.Direction.DESC, "id");
         Page<Comment> commentPage =  commentRepo.findAll(pageable);
@@ -54,6 +59,8 @@ public class CommentServiceImpl implements CommentService {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @Override
+    @Transactional
     public ResponseEntity<?> deleteComment(DeleteCommentDto deleteCommentDto) {
         Optional<Comment> comment = commentRepo.findById(deleteCommentDto.getId());
         if(comment.isEmpty()){

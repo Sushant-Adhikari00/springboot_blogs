@@ -19,4 +19,10 @@ CREATE TABLE IF NOT EXISTS `users`
 ALTER TABLE users
 ADD COLUMN profile_picture VARCHAR(255) NOT NULL;
 
+-- changeset sushant.adhikari:users-create-v3 context:dev
+-- preconditions onFail:CONTINUE onError:HALT
+
+ALTER TABLE users
+ADD COLUMN role VARCHAR(255) NOT NULL;
+
 

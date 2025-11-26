@@ -8,11 +8,17 @@ import com.project.blogs.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.ReportingPolicy;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.UUID;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
 public abstract class UserMapper {
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     public User saveUser(RequestUserDto requestUserDto) {
 
         String uniqueId = String.valueOf(UUID.randomUUID());
@@ -21,8 +27,9 @@ public abstract class UserMapper {
         user.setUsername(requestUserDto.getUsername());
         user.setEmail(requestUserDto.getEmail());
         user.setFullName(requestUserDto.getFirstName());
-        user.setPasswordHash(requestUserDto.getPassword());
+        user.setPasswordHash(passwordEncoder.encode(requestUserDto.getPassword()));
         user.setUniqueId(uniqueId);
+        user.setRole("USER");
        return user;
     }
 

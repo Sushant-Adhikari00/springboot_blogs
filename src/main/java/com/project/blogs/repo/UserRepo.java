@@ -26,4 +26,6 @@ public interface UserRepo extends JpaRepository<User, Integer> {
     User findByUniqueId(String uniqueId);
 
     Optional<User> findByUsername(@NotBlank(message = "Username is required") String username);
+
+    Optional<User> findByEmail(String email);
 }

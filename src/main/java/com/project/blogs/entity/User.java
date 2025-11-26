@@ -48,6 +48,8 @@ public class User {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @Column(name = "role", nullable = false)
+    private String role;
 
     @Column(name = "profile_picture", nullable = false)
     private String profilePicture;

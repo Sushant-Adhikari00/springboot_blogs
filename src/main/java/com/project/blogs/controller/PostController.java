@@ -14,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+
 @RestController
 @RequestMapping("api/post")
 public class PostController {
@@ -29,6 +31,12 @@ public class PostController {
     @PostMapping("/list")
     public ResponseEntity<ApiResponse<?>> getAllPosts(@RequestBody @Valid PaginationDto pageRequestDto) {
         ApiResponse<?> apiResponse = postService.listAllPost(pageRequestDto);
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
+
+    @PostMapping("/listMyPost")
+    public ResponseEntity<ApiResponse<?>> getMyPosts(Principal loggedInUser) {
+        ApiResponse<?> apiResponse = postService.listMyPost(loggedInUser);
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 

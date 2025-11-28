@@ -11,10 +11,11 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -25,6 +26,9 @@ public class SecurityConfig {
     private CustomAccessDeniedHandler customAccessDeniedHandler;
     @Autowired
     private CustomAuthenticationEntryPointExceptionHandler customAuthenticationEntryPointExceptionHandler;
+
+    @Autowired
+    private JwtFilter jwtFilter;
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -38,7 +42,8 @@ public class SecurityConfig {
                         .requestMatchers("api/user/delete").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated()
                 )
-
+                .sessionManagement(sess->sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .httpBasic(Customizer.withDefaults())
                 .exceptionHandling(exception -> exception
                         .accessDeniedHandler(customAccessDeniedHandler)

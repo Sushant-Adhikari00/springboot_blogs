@@ -10,9 +10,11 @@ import com.project.blogs.dto.post_dto.request.ViewPostRequestDto;
 import com.project.blogs.dto.post_dto.response.ListResponseDto;
 import com.project.blogs.dto.post_dto.response.ViewPostResponseDto;
 import com.project.blogs.entity.Post;
+import com.project.blogs.entity.User;
 import com.project.blogs.exception.NotFoundException;
 import com.project.blogs.mapper.PostMapper;
 import com.project.blogs.repo.PostRepo;
+import com.project.blogs.repo.UserRepo;
 import com.project.blogs.service.PostService;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
@@ -28,7 +30,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,6 +46,8 @@ public class PostServiceImpl implements PostService {
     private PostMapper postMapper;
     @Autowired
     private EmailTemplateServiceImpl emailTemplateServiceImpl;
+    @Autowired
+    private UserRepo userRepo;
 
     @CacheEvict(value ="users", allEntries = true)
     @Override
@@ -129,4 +135,14 @@ public class PostServiceImpl implements PostService {
 
     }
 
+    @Override
+    public ApiResponse<?> listMyPost(Principal loggedInUser) {
+        Optional<User> user = userRepo.findByEmail(loggedInUser.getName());
+        if(user.isEmpty()){
+            throw new NotFoundException("User not found");
+        }
+        List<Post> posts =postRepo.findByAuthor_Id(user.get().getId());
+        List<ListResponseDto> postResponse = postMapper.listMyPost(posts);
+        return new ApiResponse<>(true, "Posts listed" ,200, LocalDateTime.now(), postResponse);
+    }
 }

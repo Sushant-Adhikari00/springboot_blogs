@@ -64,6 +64,10 @@ public abstract class PostMapper{
         return posts.getContent().stream().map(this::entityToResponse).collect(Collectors.toList());
     }
 
+    public List<ListResponseDto> listMyPost(List<Post> posts)  {
+        return posts.stream().map(this::entityToResponse).collect(Collectors.toList());
+    }
+
     public abstract ViewPostResponseDto viewPost(Post post);
 
     public Post updatePost(Post post, UpdatePostRequestDto updatePostRequestDto) {
